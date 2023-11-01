@@ -20,11 +20,11 @@ class Ships{
         this.object = document.querySelector(selector);
         //deep copy, refaktoryzacja shipsSizes
         this.ships  = [...shipsSizes];
-        console.log(this.ships);
-        console.log(this.board);
+       
     }
     placeShips(){
         this.ships.forEach((ship, index) =>{
+            //po kolei każdy z 4 arrayów
             while(ship[0]){
                 //miejsce wstawienia statku
                 let x, y;
@@ -32,25 +32,18 @@ class Ships{
                     x = r(this.N - ship[1], 1);
                     y = r(this.N - ship[1], 1);
                 }while(this.board[x][y] == 1);
-                
                 const rot = r(1, 0);
-                
                 let flag = true;
                 for(let i = 0; i < ship[1]; i += 1){
                     //curr means curry, lokalizacja konkretnego masztu
                     let currX = x
                     let currY = y;
-                    if(rot == 0){
-                        console.log("tuuu", rot)
-                        currX += i
-                        console.log("curry", currX)
-                    } 
-                    
+                    if(rot == 0){  
+                        currX += i 
+                    }
                     else{
-                        console.log("tuiiiii", rot)
                         currY += i;
                     } 
-
                     if(!(this.correctShipPlacing(currX, currY))){
                         flag = false;
                         break;      //break
@@ -67,6 +60,7 @@ class Ships{
                             currY += i;
                         }
                         this.board[currX][currY] = 1;
+                        
                     }
                     this.ships[index][0] -= 1;
                 }
