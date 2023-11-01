@@ -3,10 +3,10 @@ const shipsSizes = [
     [2, 3],
     [3, 2], 
     [4, 1],
-]
+];
 
-const r = (max, min = 0)=>{
-    return Math.floor(Math.random()*(max-min)+min);
+const r = (max, min)=>{
+    return Math.round(Math.random() * (max - min) + min);
 }
 
 
@@ -14,7 +14,9 @@ class Ships{
     constructor(selector, N){
         //wypełnienie tablicy z parametrem N zerami
         this.N = N + 2;
-        this.board = new Array(this.N).fill(new Array(this.N).fill(0));
+        this.board = new Array(this.N).fill(0).map(()=>{
+            return new Array(this.N).fill(0);
+        });
         this.object = document.querySelector(selector);
         //deep copy, refaktoryzacja shipsSizes
         this.ships  = [...shipsSizes];
@@ -25,18 +27,33 @@ class Ships{
         this.ships.forEach((ship, index) =>{
             while(ship[0]){
                 //miejsce wstawienia statku
-                const [x, y] = [r(this.N - ship[1] + 1, 1), r(this.N - ship[1] + 1, 1)];
-                const rot = r(1);
+                let x, y;
+                do{
+                    x = r(this.N - ship[1], 1);
+                    y = r(this.N - ship[1], 1);
+                }while(this.board[x][y] == 1);
+                
+                const rot = r(1, 0);
+                
                 let flag = true;
                 for(let i = 0; i < ship[1]; i += 1){
                     //curr means curry, lokalizacja konkretnego masztu
-                    let currX = x, currY = y;
-                    if(rot == 0) currX += i;
-                    else currY += i;
+                    let currX = x
+                    let currY = y;
+                    if(rot == 0){
+                        console.log("tuuu", rot)
+                        currX += i
+                        console.log("curry", currX)
+                    } 
+                    
+                    else{
+                        console.log("tuiiiii", rot)
+                        currY += i;
+                    } 
 
                     if(!(this.correctShipPlacing(currX, currY))){
                         flag = false;
-                        break;      //break 
+                        break;      //break
                     }
                 }
                 if(flag){
@@ -45,15 +62,14 @@ class Ships{
                         let currY = y;
                         if(rot == 0){
                             currX += i
-
                         }
                         else{
                             currY += i;
                         }
                         this.board[currX][currY] = 1;
                     }
+                    this.ships[index][0] -= 1;
                 }
-                this.ships[index][0]--;
                 
             }
         })
