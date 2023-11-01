@@ -13,13 +13,15 @@ const r = (max, min)=>{
 class Ships{
     constructor(selector, N){
         //wypełnienie tablicy z parametrem N zerami
-        this.N = N + 2;
+        this.N = N;
+        document.querySelector(':root').style.setProperty('--N', this.N)
         this.board = new Array(this.N).fill(0).map(()=>{
             return new Array(this.N).fill(0);
         });
+        //selector to tag html w którym będzie trzymana plansza
         this.object = document.querySelector(selector);
         //deep copy, refaktoryzacja shipsSizes
-        this.ships  = [...shipsSizes];
+        this.ships  = structuredClone(shipsSizes);
        
     }
     placeShips(){
@@ -29,8 +31,8 @@ class Ships{
                 //miejsce wstawienia statku
                 let x, y;
                 do{
-                    x = r(this.N - ship[1], 1);
-                    y = r(this.N - ship[1], 1);
+                    x = r(this.N - ship[1], 0);
+                    y = r(this.N - ship[1], 0);
                 }while(this.board[x][y] == 1);
                 const rot = r(1, 0);
                 let flag = true;
@@ -60,7 +62,7 @@ class Ships{
                             currY += i;
                         }
                         this.board[currX][currY] = 1;
-                        
+
                     }
                     this.ships[index][0] -= 1;
                 }
@@ -91,6 +93,17 @@ class Ships{
             return false;
         }
         return true;
+    }
+    drawTableWithShips(){
+        for(let i = 0; i < this.N; i += 1){
+            for(let j = 0; j < this.N; j += 1){
+                const div = document.createElement('div');
+                // console.log(j, i)
+                // console.log(this.board[j][i])
+                div.classList.add(this.board[j][i] ? 'ship' : 'noShip')
+                this.object.appendChild(div);
+            }
+        }
     }
 };
 

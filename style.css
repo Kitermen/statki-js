@@ -4,8 +4,31 @@
     box-sizing: border-box;
 }
 
-.cell{
+:root{
+    --N: 12;
+    --W: 500px;
+}
+
+.field{
+    margin: 100px 0px 0px 100px;
+    display: grid;
+    grid-template-columns: repeat(var(--N), 1fr);
+    grid-template-rows: repeat(var(--N), 1fr);
+    gap: 0px;
+    width: var(--W);
     border: 1px solid black;
-    width: 40px;
-    height: 40px;
+}
+
+.field > div{
+    border: 1px solid black;
+    width: calc(var(--W) / var(--N));
+    height: calc(var(--W) / var(--N));
+}
+
+.ship{
+    background-color: blue;
+}
+
+.no-ship{
+    background-color: white;
 }
