@@ -1,2 +1,2 @@
-let pc_game_field = document.getElementById('pc_game_field');
+const board  = new Ships('#opponent_game_field', 10)
 
