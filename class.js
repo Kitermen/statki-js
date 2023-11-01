@@ -38,7 +38,20 @@ class Ships{
                         flag = false;
                         break;      //break 
                     }
+                }
+                if(flag){
+                    for(let i = 0; i < ship[1]; i += 1){
+                        let currX = x
+                        let currY = y;
+                        if(rot == 0){
+                            currX += i
 
+                        }
+                        else{
+                            currY += i;
+                        }
+                        this.board[currX][currY] = 1;
+                    }
                 }
                 this.ships[index][0]--;
                 
