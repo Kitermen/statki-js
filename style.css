@@ -7,6 +7,54 @@
 :root{
     --N: 12;
     --W: 500px;
+    --shipSize: 
+}
+
+.navalbase{
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 150px;
+}
+
+
+.boards{
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: center;
+}
+
+.mast-parent{
+    display: flex;
+    flex-direction: row;
+}
+
+.mast-parent:hover > .mast{
+    background-color: red;
+}
+
+.mast-parent.selected > .mast{
+    background-color: blue;
+}
+
+.mast{
+    width: calc(var(--W) / var(--N));
+    height: calc(var(--W) / var(--N));
+    border: 1px solid black;
+}
+
+.marked{
+    background-color: greenyellow;
+}
+
+.incorrect-placement{
+    background-color: red;
+}
+
+.placed{
+    background-color: blue;
 }
 
 .field{

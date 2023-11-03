@@ -1,7 +1,9 @@
-const board  = new Ships('#opponent_game_field', 10)
+const board  = new Ships('#opponent_game_field', 10);
+const my_board  = new Ships('#my_game_field', 10);
+
 
 
 board.placeShips()
 board.drawTableWithShips()
-
-console.table(board.board)
+my_board.drawTableForPlayer()
+console.table(board.my_board)
