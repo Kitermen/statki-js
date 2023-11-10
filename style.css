@@ -2,6 +2,7 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    font-family: monospace;
 }
 
 :root{
@@ -16,6 +17,9 @@
     flex-direction: column;
     gap: 10px;
     margin-top: 150px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }
 
 
@@ -79,4 +83,25 @@
 
 .no-ship{
     background-color: white;
+}
+
+.modals{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    margin-left: 105px;
+}
+
+.start-button{
+    width: 250px;
+    height: 100px;
+    background-color: lightcoral;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    border: 5px solid black;
+    padding-top: 25px;
+    font-size: 30px;
+    cursor: pointer;
 }

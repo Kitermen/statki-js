@@ -9,6 +9,9 @@ const r = (max, min)=>{
     return Math.round(Math.random() * (max - min) + min);
 }
 
+const navalbase = document.createElement('div');
+navalbase.classList.add('navalbase');
+const modalsBin = document.querySelector('.modals');
 
 class Ships{
     constructor(selector, N){
@@ -40,13 +43,15 @@ class Ships{
     }
     placeShips(){
         this.ships.forEach((ship, index) =>{
-            //po kolei każdy z 4 arrayów
+            //po kolei każdy z 4 arrayów [ile sztuk, ile masztów]
             while(ship[0]){
                 //miejsce wstawienia statku
                 let x, y;
                 do{
+                    
                     x = r(this.N - ship[1], 0);
                     y = r(this.N - ship[1], 0);
+                    
                 }while(this.board[x][y] == 1);
                 const rot = r(1, 0);
                 let flag = true;
@@ -111,9 +116,16 @@ class Ships{
         for(let i = 0; i < this.N; i += 1){
             for(let j = 0; j < this.N; j += 1){
                 const div = document.createElement('div');
+                div.classList.add('semi-button')
                 // console.log(j, i)
-                // console.log(this.board[j][i])
-                div.classList.add(this.board[j][i] ? 'ship' : 'noShip')
+                console.log(this.board[j][i])
+                if(this.board[j][i] == 1){
+                    div.classList.add('ship')
+                }
+                else{
+                    div.classList.add('noShip')
+                }
+                // div.classList.add(this.board[j][i] ? 'ship' : 'noShip')
                 this.object.appendChild(div);
             }
         }
@@ -127,7 +139,7 @@ class Ships{
         for(let i = 0; i < this.N; i += 1){
             for(let j = 0; j < this.N; j += 1){
                 const div = document.createElement('div');
-                // console.log(j, i)
+                // console.log("j", j, "i", i)
                 // console.log(this.board[j][i])
                 div.classList.add(this.my_board[j][i], 'noShip')
 
@@ -146,7 +158,23 @@ class Ships{
             if(this.correctPlace && (!this.filledBoard)){
                 this.marked.forEach(markedTile =>{
                     markedTile.obj.classList.add('placed');
+                    console.log("placed",document.querySelectorAll('.placed').length)
+                    console.log("selected",document.querySelectorAll('.selected').length)
+                    if(document.querySelectorAll('.placed').length == 20 || document.querySelectorAll('.selected').length == 10){
+                        const startButton = document.createElement('div');
+                        startButton.innerText = "start";
+                        startButton.classList.add('start-button');
+                       
+                        modalsBin.appendChild(startButton);
+                        startButton.addEventListener('click', () =>{
+                            startButton.style.display = "none";
+                            //gamestart
+                        })
+                    }
+                    else{
+                    //placed TU JEST MÓJ STATEK
                     this.board[markedTile.x][markedTile.y] = 1;
+                    }
                 })
                 shipsAmount += 1;
                 this.shipArray[this.selectedShip].obj.style.display = "none";
@@ -198,7 +226,7 @@ class Ships{
         for(let i = 1; i < ship.size; i += 1){
             if(this.rotation){
                 currX += direction;
-                console.log(currX)
+                // console.log(currX)
                 if(currX >= this.N){
                     i -= 1;
                     direction = -1;
@@ -239,10 +267,8 @@ class Ships{
 //ship array ma długość 10, 9 indexów, selectedShip to po prostu index shipArray
     generateMyFleet(){
         let iter = 0;
-        const navalbase = document.createElement('div');
-        navalbase.classList.add('navalbase')
         document.querySelector('.boards').appendChild(navalbase)
-
+        
         this.ships.forEach((ship)=>{
             
             for(let i = 0; i < ship[0]; i++){
@@ -272,11 +298,8 @@ class Ships{
                 navalbase.appendChild(masts);
             }
         });
-        console.log(this.shipArray);
+        // console.log(this.shipArray);
         this.shipArray[0].obj.classList.add('selected')
-        
-
-
         }
 };
 
