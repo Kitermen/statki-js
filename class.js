@@ -39,6 +39,10 @@ class Ships{
         this.marked = [];
         this.correctPlace = false;
         this.filledBoard = false;
+
+        this.gameStartFlag = false;
+        this.playerTurnFlag = true;
+        this.computerTurnFlag = false;
        
     }
     placeShips(){
@@ -131,9 +135,10 @@ class Ships{
         for(let i = 0; i < this.N; i += 1){
             for(let j = 0; j < this.N; j += 1){
                 const div = document.createElement('div');
+                div.addEventListener('click', (event) => this.playerShoots(event, div, this.board[j][i]))
                 div.classList.add('semi-button')
                 // console.log(j, i)
-                console.log(this.board[j][i])
+                console.log("cos",this.board[j][i])
                 if(this.board[j][i] == 1){
                     div.classList.add('ship')
                 }
@@ -147,14 +152,33 @@ class Ships{
     }
 
     gamestart(){
-        console.log(document.querySelectorAll('.semi-button'))
-        let flag = true;
-        if(flag){
-            document.querySelectorAll('.semi-button').addEventListener('click', () =>{
-                
+        this.gameStartFlag = true;
+        console.log("start")
+    }
 
-                flag = !flag
-            });
+    playerShoots(event, div, shootTarget){
+        if(!this.gameStartFlag){
+            console.log("Hola Hola gra się jeszcze nie zaczęła!")
+        }
+        else{
+            if(this.playerTurnFlag){
+                if(shootTarget == 1){
+                    this.playerTurnFlag = true;
+                    console.log("tu jest statek")
+                    const img = document.createElement('img')
+                    img.src='a.jpg';
+                    div.appendChild(img)
+                }
+                else if(shootTarget != 1){
+                    this.playerTurnFlag = false;
+                }
+            }                
+                // div.classList.remove('ship')
+                // div.classList.add('ship-shot')
+                // console.log(div)
+            else{
+                alert("Nie cwaniakuj cwaniaczku!")
+            }
         }
         
     }
@@ -193,7 +217,6 @@ class Ships{
                         const startButton = document.createElement('div');
                         startButton.innerText = "start";
                         startButton.classList.add('start-button');
-                       
                         modalsBin.appendChild(startButton);
                         startButton.addEventListener('click', () =>{
                             startButton.style.display = "none";

@@ -81,6 +81,10 @@
     background-color: blue;
 }
 
+img{
+    width: 48px
+}
+
 .no-ship{
     background-color: white;
 }
