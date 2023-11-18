@@ -107,6 +107,21 @@ class Ships{
         if(!(x + 1 >= this.N) && this.board[x + 1][y] == 1){
             return false;
         }
+        
+        //na ,,ukos"
+        if(!(y + 1 >= this.N) && !(x + 1 >= this.N) && this.board[x + 1][y + 1] == 1){
+            return false;
+        }
+        if(!(y - 1 < 0) && !(x + 1 >= this.N) && this.board[x + 1][y - 1] == 1){
+            return false;
+        }
+        if(!(y - 1 < 0) && !(x - 1 < 0) && this.board[x - 1][y - 1] == 1){
+            return false;
+        }
+        if(!(y + 1 > this.N) && !(x - 1 < 0) && this.board[x - 1][y + 1] == 1){
+            return false;
+        }
+        
         if(this.board[x][y] == 1){
             return false;
         }
@@ -130,6 +145,20 @@ class Ships{
             }
         }
     }
+
+    gamestart(){
+        console.log(document.querySelectorAll('.semi-button'))
+        let flag = true;
+        if(flag){
+            document.querySelectorAll('.semi-button').addEventListener('click', () =>{
+                
+
+                flag = !flag
+            });
+        }
+        
+    }
+    
 //4humanplayer:
     drawTableForPlayer(){
         this.object.addEventListener('contextmenu', (e) =>{
@@ -168,7 +197,7 @@ class Ships{
                         modalsBin.appendChild(startButton);
                         startButton.addEventListener('click', () =>{
                             startButton.style.display = "none";
-                            //gamestart
+                            this.gamestart()
                         })
                     }
                     else{
