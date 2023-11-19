@@ -40,7 +40,6 @@ class Ships{
         this.correctPlace = false;
         this.filledBoard = false;
 
-        this.gameStartFlag = false;
         this.playerTurnFlag = true;
         this.computerTurnFlag = false;
        
@@ -151,27 +150,23 @@ class Ships{
         }
     }
 
-    gamestart(){
+    gameStart(){
         this.gameStartFlag = true;
         console.log("start")
     }
 
-    playerShoots(event, div, shootTarget){
-        if(!this.gameStartFlag){
-            console.log("Hola Hola gra się jeszcze nie zaczęła!")
-        }
-        else{
-            if(this.playerTurnFlag){
-                if(shootTarget == 1){
-                    this.playerTurnFlag = true;
+    playerShoots(event, div, shotTarget){
+        if(this.gameStartFlag == true){
+            if(this.playerTurnFlag == true){
+                if(shotTarget == 1){
                     console.log("tu jest statek")
                     const img = document.createElement('img')
-                    img.src='a.jpg';
+                    img.src = 'a.jpg';
                     div.appendChild(img)
                 }
-                else if(shootTarget != 1){
-                    this.playerTurnFlag = false;
-                }
+                // else if(shootTarget != 1){
+                //     this.playerTurnFlag = false;
+                // }
             }                
                 // div.classList.remove('ship')
                 // div.classList.add('ship-shot')
@@ -179,6 +174,9 @@ class Ships{
             else{
                 alert("Nie cwaniakuj cwaniaczku!")
             }
+        }
+        else{
+            console.log("Hola Hola gra się jeszcze nie zaczęła!")
         }
         
     }
@@ -220,7 +218,7 @@ class Ships{
                         modalsBin.appendChild(startButton);
                         startButton.addEventListener('click', () =>{
                             startButton.style.display = "none";
-                            this.gamestart()
+                            this.gameStart()
                         })
                     }
                     else{
