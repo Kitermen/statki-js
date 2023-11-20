@@ -42,6 +42,15 @@ class Ships{
 
         this.playerTurnFlag = true;
         this.computerTurnFlag = false;
+        this.gameStartFlag = true;
+
+        this.shootedByBot = [];
+        this.shootedByPlayer = [];
+
+        this.boardContextSwitch = undefined;
+
+        this.botCounter = 0;
+        this.playerCounter = 0;
        
     }
     placeShips(){
@@ -137,7 +146,7 @@ class Ships{
                 div.addEventListener('click', (event) => this.playerShoots(event, div, this.board[j][i]))
                 div.classList.add('semi-button')
                 // console.log(j, i)
-                console.log("cos",this.board[j][i])
+                // console.log("cos",this.board[j][i])
                 if(this.board[j][i] == 1){
                     div.classList.add('ship')
                 }
@@ -146,41 +155,77 @@ class Ships{
                 }
                 // div.classList.add(this.board[j][i] ? 'ship' : 'noShip')
                 this.object.appendChild(div);
+                this.my_board[j][i] = div
             }
         }
     }
 
     gameStart(){
+        // console.log(this.my_board);
         this.gameStartFlag = true;
         console.log("start")
     }
-
+    
     playerShoots(event, div, shotTarget){
-        if(this.gameStartFlag == true){
-            if(this.playerTurnFlag == true){
+        if(this.gameStartFlag){
+            if(this.playerTurnFlag){
                 if(shotTarget == 1){
-                    console.log("tu jest statek")
+                    this.playerCounter += 1;
                     const img = document.createElement('img')
                     img.src = 'a.jpg';
                     div.appendChild(img)
                 }
-                // else if(shootTarget != 1){
-                //     this.playerTurnFlag = false;
-                // }
-            }                
-                // div.classList.remove('ship')
-                // div.classList.add('ship-shot')
-                // console.log(div)
+                else if(shotTarget != 1){
+                    const img = document.createElement('img')
+                    img.src = 'huge.jpg';
+                    div.appendChild(img)
+                    this.playerTurnFlag = false;
+                    this.opponentShoots()
+                }
+                const replacedDiv = div.cloneNode(true)
+                div.parentNode.replaceChild(replacedDiv, div)
+                replacedDiv.addEventListener('click', ()=>{
+                    alert("Tu już strzelałeś")
+                })
+                
+            }              
             else{
-                alert("Nie cwaniakuj cwaniaczku!")
+                alert("Poczekaj na swoją kolej!~!!!!@#EFC")
             }
         }
         else{
             console.log("Hola Hola gra się jeszcze nie zaczęła!")
         }
-        
     }
-    
+
+    opponentShoots(){
+        setTimeout(()=>{
+            let x, y;
+            do{
+            x = r(this.N - 1, 0)
+            y = r(this.N - 1, 0)
+            }while(this.shootedByBot.includes(`${x}:${y}`))
+            this.shootedByBot.push(`${x}:${y}`);
+            const div = this.boardContextSwitch.my_board[x][y]
+            this.boardContextSwitch.my_board[x][y].classList.add("Shooted");
+            if(this.boardContextSwitch.board[x][y] == 1){
+                const img = document.createElement('img')
+                img.src = 'a.jpg';
+                div.appendChild(img)
+                this.opponentShoots()
+            }
+            else{
+                const img = document.createElement('img')
+                img.src = 'huge.jpg';
+                div.appendChild(img)
+                this.playerTurnFlag = true;
+            }
+            
+            
+            
+        }, 1000)
+    }
+
 //4humanplayer:
     drawTableForPlayer(){
         this.object.addEventListener('contextmenu', (e) =>{
@@ -192,40 +237,42 @@ class Ships{
                 const div = document.createElement('div');
                 // console.log("j", j, "i", i)
                 // console.log(this.board[j][i])
-                div.classList.add(this.my_board[j][i], 'noShip')
+                div.classList.add('noShip')
+                // div.classList.add(this.my_board[j][i], 'noShip')
 
                 div.addEventListener('mouseenter', () =>{
                     this.markingMyBoard(j, i);
                 })
                 //zamiana 0 na div w my_board
                 this.my_board[j][i] = div;
-                //this.object to plansza
+                //this.object - plansza
                 this.object.appendChild(div);
             }
         }
+        
         let shipsAmount = 0;
         let lastIndex = 9;
         this.object.addEventListener('click', () =>{
             if(this.correctPlace && (!this.filledBoard)){
                 this.marked.forEach(markedTile =>{
                     markedTile.obj.classList.add('placed');
-                    console.log("placed",document.querySelectorAll('.placed').length)
-                    console.log("selected",document.querySelectorAll('.selected').length)
-                    if(document.querySelectorAll('.placed').length == 20 || document.querySelectorAll('.selected').length == 10){
-                        const startButton = document.createElement('div');
-                        startButton.innerText = "start";
-                        startButton.classList.add('start-button');
-                        modalsBin.appendChild(startButton);
-                        startButton.addEventListener('click', () =>{
-                            startButton.style.display = "none";
-                            this.gameStart()
-                        })
-                    }
-                    else{
-                    //placed TU JEST MÓJ STATEK
+                    //placed - TU JEST MÓJ STATEK
                     this.board[markedTile.x][markedTile.y] = 1;
-                    }
+                    // console.log(this.my_board);
+                    
+
+                    
                 })
+                if(document.querySelectorAll('.placed').length == 20){
+                    const startButton = document.createElement('div');
+                    startButton.innerText = "start";
+                    startButton.classList.add('start-button');
+                    modalsBin.appendChild(startButton);
+                    startButton.addEventListener('click', () =>{
+                        startButton.style.display = "none";
+                        this.gameStart()
+                    })
+                }
                 shipsAmount += 1;
                 this.shipArray[this.selectedShip].obj.style.display = "none";
                 if(this.selectedShip < lastIndex){
@@ -235,7 +282,6 @@ class Ships{
                 else{
                     if(shipsAmount < 10){
                         lastIndex -= 1;
-                        console.log("here")
                         this.selectedShip = 0;
                         while(this.shipArray[this.selectedShip].obj.style.display == "none"){
                             this.selectedShip += 1;
