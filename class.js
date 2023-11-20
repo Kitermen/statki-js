@@ -12,7 +12,11 @@ const r = (max, min)=>{
 const navalbase = document.createElement('div');
 navalbase.classList.add('navalbase');
 const modalsBin = document.querySelector('.modals');
-
+//
+//
+let gameStartFlag = false;
+//
+//
 class Ships{
     constructor(selector, N){
         //wypełnienie tablicy z parametrem N zerami
@@ -25,6 +29,7 @@ class Ships{
         this.my_board = new Array(this.N).fill(0).map(()=>{
             return new Array(this.N).fill(0);
         });
+
         //selector to tag html w którym będzie trzymana plansza
         this.object = document.querySelector(selector);
         //deep copy, refaktoryzacja shipsSizes
@@ -42,7 +47,6 @@ class Ships{
 
         this.playerTurnFlag = true;
         this.computerTurnFlag = false;
-        this.gameStartFlag = true;
 
         this.shootedByBot = [];
         this.shootedByPlayer = [];
@@ -60,7 +64,6 @@ class Ships{
                 //miejsce wstawienia statku
                 let x, y;
                 do{
-                    
                     x = r(this.N - ship[1], 0);
                     y = r(this.N - ship[1], 0);
                     
@@ -145,8 +148,6 @@ class Ships{
                 const div = document.createElement('div');
                 div.addEventListener('click', (event) => this.playerShoots(event, div, this.board[j][i]))
                 div.classList.add('semi-button')
-                // console.log(j, i)
-                // console.log("cos",this.board[j][i])
                 if(this.board[j][i] == 1){
                     div.classList.add('ship')
                 }
@@ -159,25 +160,24 @@ class Ships{
             }
         }
     }
-
-    gameStart(){
-        // console.log(this.my_board);
-        this.gameStartFlag = true;
-        console.log("start")
-    }
     
     playerShoots(event, div, shotTarget){
-        if(this.gameStartFlag){
+        if(gameStartFlag){
             if(this.playerTurnFlag){
                 if(shotTarget == 1){
+                    document.getElementById('hood').style.display = "block";
+                    setTimeout(()=>{
+                        document.getElementById('hood').style.display = "none";
+                    }, 100)
+                    div.classList.add('opponentDamaged')
                     this.playerCounter += 1;
                     const img = document.createElement('img')
-                    img.src = 'a.jpg';
+                    img.src = 'images/hit.png';
                     div.appendChild(img)
                 }
                 else if(shotTarget != 1){
                     const img = document.createElement('img')
-                    img.src = 'huge.jpg';
+                    img.src = 'images/miss.png';
                     div.appendChild(img)
                     this.playerTurnFlag = false;
                     this.opponentShoots()
@@ -194,7 +194,7 @@ class Ships{
             }
         }
         else{
-            console.log("Hola Hola gra się jeszcze nie zaczęła!")
+            alert("Hola Hola gra się jeszcze nie zaczęła!")
         }
     }
 
@@ -210,18 +210,16 @@ class Ships{
             this.boardContextSwitch.my_board[x][y].classList.add("Shooted");
             if(this.boardContextSwitch.board[x][y] == 1){
                 const img = document.createElement('img')
-                img.src = 'a.jpg';
+                img.src = 'images/hit.png';
                 div.appendChild(img)
                 this.opponentShoots()
             }
             else{
                 const img = document.createElement('img')
-                img.src = 'huge.jpg';
+                img.src = 'images/miss.png';
                 div.appendChild(img)
                 this.playerTurnFlag = true;
             }
-            
-            
             
         }, 1000)
     }
@@ -257,11 +255,7 @@ class Ships{
                 this.marked.forEach(markedTile =>{
                     markedTile.obj.classList.add('placed');
                     //placed - TU JEST MÓJ STATEK
-                    this.board[markedTile.x][markedTile.y] = 1;
-                    // console.log(this.my_board);
-                    
-
-                    
+                    this.board[markedTile.x][markedTile.y] = 1;                  
                 })
                 if(document.querySelectorAll('.placed').length == 20){
                     const startButton = document.createElement('div');
@@ -270,7 +264,7 @@ class Ships{
                     modalsBin.appendChild(startButton);
                     startButton.addEventListener('click', () =>{
                         startButton.style.display = "none";
-                        this.gameStart()
+                        gameStartFlag = true;               
                     })
                 }
                 shipsAmount += 1;
@@ -300,7 +294,7 @@ class Ships{
     markingMyBoard(x, y){
         if(this.filledBoard){
             return;
-        }
+        }-
         // console.log(x, y)
         //usuwanie zielonego koloru
         this.marked.forEach(markedItem =>{
