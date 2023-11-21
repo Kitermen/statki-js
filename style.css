@@ -116,12 +116,24 @@ img{
     background-color: white;
 }
 
+
 .modals{
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 50px;
     margin-left: 105px;
+}
+
+.win-div{
+    width: 600px;
+    height: 300px;
+    background-color: lightblue;
+    border: 10px solid black;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 110px;
+    font-size: 40px;
 }
 
 .start-button{
