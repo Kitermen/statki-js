@@ -56,7 +56,8 @@ class Ships{
         this.computerCounter = 0;
         this.playerCounter = 0;
        
-        this.cleverBotCoords;
+        this.botCoor;
+        //botCoor - cleverBotCoords
         this.beSmartBot = false;
         this.cleverBotDir = 0;
         this.firstLoopXD = true;
@@ -185,6 +186,7 @@ class Ships{
                     img.src = 'images/hit.png';
                     img.style.opacity = "0.6";
                     div.appendChild(img);
+                    console.log(this.shootedByBot);
                     console.log(this.playerCounter);
                     if(this.playerCounter == 20){
                         this.playerTurnFlag = false;
@@ -204,6 +206,7 @@ class Ships{
                     this.playerTurnFlag = false;
                     this.opponentShoots();
                 }
+    
                 const replacedDiv = div.cloneNode(true)
                 div.parentNode.replaceChild(replacedDiv, div)
                 replacedDiv.addEventListener('click', ()=>{
@@ -236,30 +239,30 @@ class Ships{
                     img.style.opacity = "0.6";
                     div.appendChild(img);
                     this.computerCounter += 1;
-                    this.cleverBotDir += 1;
+                    
                     this.beSmartBot = true;
-                    this.cleverBotCoords = {
+                    this.botCoor = {
                         lastX: x,
                         lastY: y,
                     }
-                    // if(this.computerCounter == 2){
-                    //     this.playerTurnFlag = false;
-                    //     this.computerTurnFlag = false;
-                    //     const lossDiv = document.createElement('div');
-                    //     lossDiv.classList.add('win-div');
-                    //     lossDiv.innerText = "Gratulacje, wygrałeś!"
-                    //     modalsBin.appendChild(lossDiv);
-                    //     const revealEnemyShips = document.querySelectorAll('.ship')
-                    //     for(let i = 0; i < revealEnemyShips.length; i += 1){
-                    //         revealEnemyShips[i].style.backgroundColor = "red";
-                    //     }
-                    //     setTimeout(()=>{
-                    //         this.gameRestart()
-                    //     }, 5000)
-                    // }
-                    // else{
-                        this.opponentShoots();
-                    // }
+                    if(this.computerCounter == 20){
+                        this.playerTurnFlag = false;
+                        this.computerTurnFlag = false;
+                        const lossDiv = document.createElement('div');
+                        lossDiv.classList.add('win-div');
+                        lossDiv.innerText = "Gratulacje, wygrałeś!"
+                        modalsBin.appendChild(lossDiv);
+                        const revealEnemyShips = document.querySelectorAll('.ship')
+                        for(let i = 0; i < revealEnemyShips.length; i += 1){
+                            revealEnemyShips[i].style.backgroundColor = "red";
+                        }
+                        setTimeout(()=>{
+                            this.gameRestart()
+                        }, 5000)
+                    }
+                    else{
+                        // this.opponentShoots();
+                    }
                 }
                 else{
                     const img = document.createElement('img');
@@ -270,21 +273,65 @@ class Ships{
                 }
             }
             else if(this.beSmartBot){
-                if(cleverBotDir % 4 == 1){
-                    this.cleverBotCoords.lastX + 1;
+                //x razy if >>>> switch
+                if(this.cleverBotDir % 4 == 1){
+                    this.botCoor.lastX = this.botCoor.lastX + 1;
 
-                }
-                if(cleverBotDir % 4 == 2){
+                    if(this.botCoor.lastX <= 9 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)){
+                        
+                            this.shootedByBot.push(`${this.botCoor.lastX}:${this.botCoor.lastY}`);
+                            const div = this.boardContextSwitch.my_board[x][y];
+                            this.boardContextSwitch.my_board[x][y].classList.add("my-ship-damaged");
 
-                }
-                if(cleverBotDir % 4 == 3){
+                            if(this.boardContextSwitch.board[x][y] == 1){
+                                const img = document.createElement('img');
+                                img.src = 'images/hit.png';
+                                img.style.opacity = "0.6";
+                                div.appendChild(img);
+                                this.computerCounter += 1;
+                                if(this.computerCounter == 20){
+                                    this.playerTurnFlag = false;
+                                    this.computerTurnFlag = false;
+                                    const lossDiv = document.createElement('div');
+                                    lossDiv.classList.add('win-div');
+                                    lossDiv.innerText = "Gratulacje, wygrałeś!"
+                                    modalsBin.appendChild(lossDiv);
+                                    const revealEnemyShips = document.querySelectorAll('.ship')
+                                    for(let i = 0; i < revealEnemyShips.length; i += 1){
+                                        revealEnemyShips[i].style.backgroundColor = "red";
+                                    }
+                                    setTimeout(()=>{
+                                        this.gameRestart()
+                                    }, 5000)
+                                }
+                                else{
+                                    // this.opponentShoots();
+                                }  
+                            }
+                            else{
+                                const img = document.createElement('img');
+                                img.src = 'images/miss.png';
+                                img.style.opacity = "0.6";
+                                div.appendChild(img);
+                                this.playerTurnFlag = true;
+                            }
+                    }
+                    else{
+                        this.botCoor.lastX = this.botCoor.lastX - 1;
+                        this.cleverBotDir = this.cleverBotDir + 1;
+                    }
                     
                 }
-                if(cleverBotDir % 4 == 4){
+                if(this.cleverBotDir % 4 == 2){
+
+                }
+                if(this.cleverBotDir % 4 == 3){
+                    
+                }
+                if(this.cleverBotDir % 4 == 4){
                     
                 }
             }
-            
             else{
                 console.log("xd");
             }
