@@ -64,6 +64,7 @@ class Ships {
         this.cleverBotDir = 0;
         // this.shipSunk = true;
         this.setConstCoorOnce;
+        this.hitInDir1;
         this.hitInDir3;
         //desperacja
     }
@@ -80,11 +81,16 @@ class Ships {
         my_game_field.id = "my_game_field";
         document.getElementsByClassName('boards')[0].appendChild(my_game_field);
 
-        if(document.getElementsByClassName('loss-div')[0].style.display != "none"){
-            document.getElementsByClassName('loss-div')[0].remove()
-        }
-        else if(document.getElementsByClassName('win-div')[0].style.display != "none"){
-            document.getElementsByClassName('win-div')[0].remove()
+        // if(document.getElementsByClassName('loss-div')[0].style.display != "none"){
+        //     document.getElementsByClassName('loss-div')[0].remove()
+        // }
+        // else if(document.getElementsByClassName('win-div')[0].style.display != "none"){
+        //     document.getElementsByClassName('win-div')[0].remove()
+        // }
+
+        //sprawdzam bo czemu nie?
+        if(modalsBin.hasChildNodes()){
+            modalsBin.innerHTML = "";
         }
 
         const board  = new Ships('#opponent_game_field', 10);
@@ -218,9 +224,9 @@ class Ships {
         if (gameStartFlag) {
             if (playerTurnFlag) {
                 if (shotTarget == 1) {
-                    document.getElementById('hood').style.display = "block";
+                    document.getElementById('bismarck').style.display = "block";
                     setTimeout(() => {
-                        document.getElementById('hood').style.display = "none";
+                        document.getElementById('bismarck').style.display = "none";
                     }, 100)
                     div.classList.add('opponent-ship-damaged');
                     this.playerCounter += 1;
@@ -233,6 +239,7 @@ class Ships {
                     if (this.playerCounter == 20) {
                         this.playerWins();
                     }
+                    
                 }
                 else if (shotTarget != 1) {
                     const img = document.createElement('img');
@@ -308,7 +315,7 @@ class Ships {
             else{
                 console.log("cos dziwnego sie ten tego");
             }
-        }, 800)
+        }, 1000)
     }
 
     cleverBotDir_1(){
@@ -317,7 +324,7 @@ class Ships {
                 lastX: this.constBotCoor.x,
                 lastY: this.constBotCoor.y
             }
-            this.setConstCoorOnce = !this.setConstCoorOnce
+            this.setConstCoorOnce = !this.setConstCoorOnce;
         }
             this.botCoor.lastX = this.botCoor.lastX + 1;
                     if (this.botCoor.lastX <= 9 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
@@ -349,7 +356,6 @@ class Ships {
                             img.style.opacity = "0.6";
                             div.appendChild(img);
                             playerTurnFlag = true;
-                            // this.playerShoots()
                         }
                     }
                     else {
@@ -368,7 +374,7 @@ class Ships {
                 lastX: this.constBotCoor.x,
                 lastY: this.constBotCoor.y
             }
-            this.setConstCoorOnce = !this.setConstCoorOnce
+            this.setConstCoorOnce = !this.setConstCoorOnce;
         }
             this.botCoor.lastY = this.botCoor.lastY - 1;
                     if (this.botCoor.lastY >= 0 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
@@ -458,29 +464,6 @@ class Ships {
                                 this.verticalShooting = false;
                                 this.cleverBotDir = 0;
                             }
-
-                            // if(this.hitInDir1 && this.hitInDir3){
-                            //     this.beSmartBot = false;
-                            //     this.hitInDir1 = false;
-                            //     this.verticalShooting = false;
-                            //     this.cleverBotDir = 0;
-                            // }
-
-                            // else if(!this.hitInDir1 && this.hitInDir3){
-                            //     this.beSmartBot = false;
-                            //     this.hitInDir1 = false;
-                            //     this.verticalShooting = false;
-                            //     this.cleverBotDir = 0;
-                            // }
-
-
-
-                            // else if(!this.hitInDir1 && !this.hitInDir3){
-                            //     this.hitInDir1 = false;
-                            //     this.verticalShooting = false;
-                            //     this.cleverBotDir = 0;
-                            //     this.setConstCoorOnce = true;
-                            // }
                         }
                     }
                     else {
@@ -491,15 +474,8 @@ class Ships {
                             this.hitInDir1 = false;
                             this.opponentShoots()
                         }
-                        else if(!this.hitInDir1 || !this.hitInDir3){
-                            console.log("ostatni else w dir3");
-                            this.cleverBotDir = 0;
-                            this.verticalShooting = false;
-                            this.hitInDir1 = false;
-                            this.setConstCoorOnce = true;
-                            this.opponentShoots()
-                        }
-                        else if(!this.hitInDir1 && !this.hitInDir3){
+                        // else if(!this.hitInDir1 || !this.hitInDir3){
+                        else{
                             console.log("ostatni else w dir3");
                             this.cleverBotDir = 0;
                             this.verticalShooting = false;
@@ -519,7 +495,7 @@ class Ships {
                 lastX: this.constBotCoor.x,
                 lastY: this.constBotCoor.y
             }
-            this.setConstCoorOnce = !this.setConstCoorOnce
+            this.setConstCoorOnce = !this.setConstCoorOnce;
         }
             this.botCoor.lastY = this.botCoor.lastY + 1;
                     if (this.botCoor.lastY <= 9 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
@@ -577,7 +553,7 @@ class Ships {
                     console.log("weszło do funkcji 4");
                     this.cleverBotDir_4()
                 }
-            }, 300)
+            }, 1000)
         }
         else{
             this.opponentShoots()
@@ -649,7 +625,7 @@ class Ships {
                     startButton.classList.add('start-button');
                     modalsBin.appendChild(startButton);
                     startButton.addEventListener('click', () => {
-                        startButton.style.display = "none";
+                        startButton.remove()
                         gameStartFlag = true;
                         const oponentBoardTargets = document.querySelectorAll('.semi-button');
                         for (let i = 0; i < oponentBoardTargets.length; i += 1) {
@@ -657,7 +633,7 @@ class Ships {
                         }
                         if(playerTurnFlag){
                             playerBoard.addEventListener('click', ()=>{
-                                alert('Twoja kolej jest to dlaczego klikasz SWOJĄ planszę ehhhh')
+                                alert('Dlaczego klikasz SWOJĄ planszę ehhhh')
                             })
                         }
                     })
