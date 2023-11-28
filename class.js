@@ -16,6 +16,7 @@ const playerBoard = document.getElementById('my_game_field');
 //
 //
 let gameStartFlag = false;
+playerTurnFlag = true;
 //
 //
 class Ships {
@@ -46,20 +47,25 @@ class Ships {
         this.correctPlace = false;
         this.filledBoard = false;
 
-        this.playerTurnFlag = true;
 
         this.shootedByBot = [];
-        this.shootedByPlayer = [];
+        //miejsca na planszy na którą strzela bot, w które już strzelił
 
         this.boardContextSwitch = undefined;
 
         this.computerCounter = 0;
         this.playerCounter = 0;
+        //punktacja (0-20) 
 
+        this.botCoor;
         this.constBotCoor;
         //constBotCoor - cleverBotCoords (x, y w którym odpala się bot)
         this.beSmartBot = false;
         this.cleverBotDir = 0;
+        // this.shipSunk = true;
+        this.setConstCoorOnce;
+        this.hitInDir3;
+        //desperacja
     }
 
     gameRestart() {
@@ -88,6 +94,19 @@ class Ships {
         board.boardContextSwitch = my_board;
         my_board.drawTableForPlayer()
         console.log(this.computerCounter);
+
+        gameStartFlag = false;
+        playerTurnFlag = true;
+        this.computerCounter = 0;
+        this.playerCounter = 0;
+        this.botCoor;
+        this.constBotCoor;
+        this.beSmartBot = false;
+        this.cleverBotDir = 0;
+        this.setConstCoorOnce;
+        this.hitInDir3;
+
+
     }
 
 
@@ -197,7 +216,7 @@ class Ships {
 
     playerShoots(event, div, shotTarget) {
         if (gameStartFlag) {
-            if (this.playerTurnFlag) {
+            if (playerTurnFlag) {
                 if (shotTarget == 1) {
                     document.getElementById('hood').style.display = "block";
                     setTimeout(() => {
@@ -212,12 +231,7 @@ class Ships {
                     console.log(this.shootedByBot);
                     console.log(this.playerCounter);
                     if (this.playerCounter == 20) {
-                        this.playerTurnFlag = false;
-                        const winDiv = document.createElement('div');
-                        winDiv.classList.add('win-div');
-                        winDiv.innerText = "Gratulacje, wygrałeś!"
-                        modalsBin.appendChild(winDiv);
-                        this.gameRestart()
+                        this.playerWins();
                     }
                 }
                 else if (shotTarget != 1) {
@@ -225,28 +239,28 @@ class Ships {
                     img.src = 'images/miss.png';
                     img.style.opacity = "0.6";
                     div.appendChild(img);
-                    this.playerTurnFlag = false;
+                    playerTurnFlag = false;
                     this.opponentShoots();
                 }
 
-                const replacedDiv = div.cloneNode(true)
-                div.parentNode.replaceChild(replacedDiv, div)
+                const replacedDiv = div.cloneNode(true);
+                div.parentNode.replaceChild(replacedDiv, div);
                 replacedDiv.addEventListener('click', () => {
-                    alert("Tu już strzelałeś")
-                })
+                    alert("Tu już strzelałeś");
+                });
             }
             else {
-                alert("Poczekaj na swoją kolej!~!!*!!@#EFC")
+                alert("Poczekaj na swoją kolej!~!!*!!@#EFC");
             }
         }
         else {
-            alert("Hola Hola gra się jeszcze nie zaczęła!")
+            alert("Hola Hola gra się jeszcze nie zaczęła!");
         }
     }
 
     opponentShoots() {
         setTimeout(() => {
-            if (!this.beSmartBot || this.computerCounter == 0 && !this.playerTurnFlag) {
+            if (!this.beSmartBot || this.computerCounter == 0 && !playerTurnFlag) {
                 let x, y;
                 do {
                     x = r(this.N - 1, 0)
@@ -263,17 +277,20 @@ class Ships {
 
                     this.computerCounter += 1;
                     this.beSmartBot = true;
+                    this.verticalShooting = true;
+                    this.cleverBotDir = 0;
 
                     this.constBotCoor = {
-                        lastX: x,
-                        lastY: y,
+                        x: x,
+                        y: y,
                     }
+                        
+                    this.setConstCoorOnce = true;
 
                     if (this.computerCounter == 20) {
                         this.playerLoses()
                     }
                     else {
-                        console.log(this.beSmartBot);
                         this.beSmartBotFunc();
                     }
                 }
@@ -282,7 +299,7 @@ class Ships {
                     img.src = 'images/miss.png';
                     img.style.opacity = "0.6";
                     div.appendChild(img);
-                    this.playerTurnFlag = true;
+                    playerTurnFlag = true;
                 }
             }
             else if (this.beSmartBot) {
@@ -291,42 +308,19 @@ class Ships {
             else{
                 console.log("cos dziwnego sie ten tego");
             }
-        }, 10)
-    }
-
-    beSmartBotFunc(){
-        if(this.beSmartBot){
-            setTimeout(()=>{
-                //x razy if >>>> switch
-                if (this.cleverBotDir == 0 && this.verticalShooting) {
-                    this.cleverBotDir_1()
-                }
-                if (this.cleverBotDir == 0 && !this.verticalShooting) {
-                    this.cleverBotDir_2()
-                }
-                if (this.cleverBotDir == 1 && this.verticalShooting) {
-                    this.cleverBotDir_3()
-                }
-                if (this.cleverBotDir == 1 && !this.verticalShooting) {
-                    this.cleverBotDir_4()
-                }
-            }, 10)
-        }
+        }, 800)
     }
 
     cleverBotDir_1(){
-        this.botCoor = this.constBotCoor;
+        if(this.setConstCoorOnce){
+            this.botCoor = {
+                lastX: this.constBotCoor.x,
+                lastY: this.constBotCoor.y
+            }
+            this.setConstCoorOnce = !this.setConstCoorOnce
+        }
             this.botCoor.lastX = this.botCoor.lastX + 1;
-            console.log("1. warunek 1 segment");
-                if(this.shootedByBot.includes(`${this.botCoor.lastX + 1}:${this.botCoor.lastY}`) && this.shootedByBot.includes(`${this.botCoor.lastX - 1}:${this.botCoor.lastY}`) && this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY + 1}`) && this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY - 1}`)){
-                    console.log("mniej ekskluzywny warunek");
-                    this.beSmartBot = false;
-                    console.log("ZAISTNIAL WARUNEK EKSKLUZYWMY");
-                    this.opponentShoots()
-                }
-                else{
                     if (this.botCoor.lastX <= 9 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
-                        console.log("1. warunek 2 segment");
                         this.shootedByBot.push(`${this.botCoor.lastX}:${this.botCoor.lastY}`);
                         const div = this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY];
                         
@@ -335,103 +329,97 @@ class Ships {
                             this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY].classList.add("my-ship-damaged");
                             const img = document.createElement('img');
                             img.src = 'images/hit.png';
+                            console.log("funkcja dir1 trafiła");
                             img.style.opacity = "0.6";
                             div.appendChild(img);
                             this.computerCounter += 1;
+                            if (this.computerCounter == 20) {
+                                this.playerLoses()
+                            }
                             this.verticalShooting = true;
-                            this.hitVertically = true;    
+                            this.hitInDir1 = true;    
                             this.opponentShoots()
                         }
                         else {
                             this.cleverBotDir = 1;
+                            console.log("funkcja dir1 nie trafiła");
+                            this.setConstCoorOnce = true;
                             const img = document.createElement('img');
                             img.src = 'images/miss.png';
                             img.style.opacity = "0.6";
                             div.appendChild(img);
-                            this.playerTurnFlag = true;
+                            playerTurnFlag = true;
+                            // this.playerShoots()
                         }
                     }
                     else {
+                        this.setConstCoorOnce = true;
                         this.cleverBotDir = 1;
+                        this.opponentShoots()
                     }
-                }
     }
 
 
 
 
     cleverBotDir_2(){
-        this.botCoor = this.constBotCoor;
+        if(this.setConstCoorOnce){
+            this.botCoor = {
+                lastX: this.constBotCoor.x,
+                lastY: this.constBotCoor.y
+            }
+            this.setConstCoorOnce = !this.setConstCoorOnce
+        }
             this.botCoor.lastY = this.botCoor.lastY - 1;
-            console.log("1. warunek 1 segment");
-                if(this.shootedByBot.includes(`${this.botCoor.lastX + 1}:${this.botCoor.lastY}`) && this.shootedByBot.includes(`${this.botCoor.lastX - 1}:${this.botCoor.lastY}`) && this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY + 1}`) && this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY - 1}`)){
-                    console.log("mniej ekskluzywny warunek");
-                    this.beSmartBot = false;
-                    console.log("ZAISTNIAL WARUNEK EKSKLUZYWMY");
-                    this.opponentShoots()
-                }
-                else{
                     if (this.botCoor.lastY >= 0 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
-                        console.log("1. warunek 2 segment");
                         this.shootedByBot.push(`${this.botCoor.lastX}:${this.botCoor.lastY}`);
-                        const div = this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY];
+                        const divDir3 = this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY];
                         this.verticalShooting = false;
 
                         if (this.boardContextSwitch.board[this.botCoor.lastX][this.botCoor.lastY] == 1) {
                             this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY].classList.add("my-ship-damaged");
                             const img = document.createElement('img');
+                            console.log("funkcja dir2 trafiła");
                             img.src = 'images/hit.png';
                             img.style.opacity = "0.6";
-                            div.appendChild(img);
+                            divDir3.appendChild(img);
                             this.computerCounter += 1;
-                            this.hitHorizontally = true;
+                            if (this.computerCounter == 20) {
+                                this.playerLoses()
+                            }
                             this.opponentShoots()
                         }
                         else {
+                            console.log("funkcja dir2 nie trafiła");
+                            this.cleverBotDir = 1;
+                            this.setConstCoorOnce = true;
                             const img = document.createElement('img');
                             img.src = 'images/miss.png';
                             img.style.opacity = "0.6";
-                            div.appendChild(img);
-                            this.playerTurnFlag = true;
-                            if(this.hitVertically){
-                                this.beSmartBot = false;
-                                this.hitVertically = false;
-                            }
+                            divDir3.appendChild(img);
+                            playerTurnFlag = true;
                         }
                     }
                     else {
-                        if(this.hitVertically){
-                            this.beSmartBot = false;
-                            this.hitVertically = false;
-                        }
-                        else{
-                            this.cleverBotDir = 0;
-                            this.verticalShooting = false;
-                        }
+                        this.setConstCoorOnce = true;
+                        this.cleverBotDir = 1;
+                        this.opponentShoots()
                     }
-                }
     }
 
 
-
-
     cleverBotDir_3(){
-        this.botCoor = this.constBotCoor;
+        if(this.setConstCoorOnce){
+            this.botCoor = {
+                lastX: this.constBotCoor.x,
+                lastY: this.constBotCoor.y
+            }
+            this.setConstCoorOnce = !this.setConstCoorOnce;
+        }
             this.botCoor.lastX = this.botCoor.lastX - 1;
-            console.log("1. warunek 1 segment");
-                if(this.shootedByBot.includes(`${this.botCoor.lastX + 1}:${this.botCoor.lastY}`) && this.shootedByBot.includes(`${this.botCoor.lastX - 1}:${this.botCoor.lastY}`) && this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY + 1}`) && this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY - 1}`)){
-                    console.log("mniej ekskluzywny warunek");
-                    this.beSmartBot = false;
-                    console.log("ZAISTNIAL WARUNEK EKSKLUZYWMY");
-                    this.opponentShoots()
-                }
-                else{
                     if (this.botCoor.lastX >= 0 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
-                        console.log("1. warunek 2 segment");
                         this.shootedByBot.push(`${this.botCoor.lastX}:${this.botCoor.lastY}`);
                         const div = this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY];
-                        this.verticalShooting = true;
-
                         if (this.boardContextSwitch.board[this.botCoor.lastX][this.botCoor.lastY] == 1) {
                             this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY].classList.add("my-ship-damaged");
                             const img = document.createElement('img');
@@ -439,42 +427,181 @@ class Ships {
                             img.style.opacity = "0.6";
                             div.appendChild(img);
                             this.computerCounter += 1;
-                            
+                            if (this.computerCounter == 20) {
+                                this.playerLoses()
+                            }
+                            this.verticalShooting = true;
+                            this.hitInDir3 = true;
+                            console.log("funkcja dir3 trafiła");
                             this.opponentShoots()
                         }
                         else {
+                            console.log("funkcja dir3 nie trafiła", this.verticalShooting, this.hitInDir1);
                             const img = document.createElement('img');
                             img.src = 'images/miss.png';
                             img.style.opacity = "0.6";
                             div.appendChild(img);
-                            this.playerTurnFlag = true;
-                            if(this.hitVertically){
-                                this.beSmartBot = false;
-                                this.hitVertically = false;
-                                this.verticalShooting = true;
+                            playerTurnFlag = true;
+                            this.setConstCoorOnce = true;
+                           
+                            if(!this.hitInDir1 && !this.hitInDir3){
+                                this.hitInDir1 = false;
+                                this.hitInDir3 = false;
+                                this.verticalShooting = false;
+                                this.cleverBotDir = 0;
+                                this.setConstCoorOnce = true;
                             }
+                            else{
+                                this.beSmartBot = false;
+                                this.hitInDir1 = false;
+                                this.hitInDir3 = false;
+                                this.verticalShooting = false;
+                                this.cleverBotDir = 0;
+                            }
+
+                            // if(this.hitInDir1 && this.hitInDir3){
+                            //     this.beSmartBot = false;
+                            //     this.hitInDir1 = false;
+                            //     this.verticalShooting = false;
+                            //     this.cleverBotDir = 0;
+                            // }
+
+                            // else if(!this.hitInDir1 && this.hitInDir3){
+                            //     this.beSmartBot = false;
+                            //     this.hitInDir1 = false;
+                            //     this.verticalShooting = false;
+                            //     this.cleverBotDir = 0;
+                            // }
+
+
+
+                            // else if(!this.hitInDir1 && !this.hitInDir3){
+                            //     this.hitInDir1 = false;
+                            //     this.verticalShooting = false;
+                            //     this.cleverBotDir = 0;
+                            //     this.setConstCoorOnce = true;
+                            // }
                         }
                     }
                     else {
-                        if(this.hitVertically){
+                        if(this.hitInDir1 || this.hitInDir3){
+                            console.log("if(this.hitInDir1 || this.hitInDir3){   zaistnialo w dir3 lol");
                             this.beSmartBot = false;
-                            this.hitVertically = false;
+                            this.verticalShooting = false;
+                            this.hitInDir1 = false;
+                            this.opponentShoots()
                         }
-                        else{
+                        else if(!this.hitInDir1 || !this.hitInDir3){
+                            console.log("ostatni else w dir3");
                             this.cleverBotDir = 0;
                             this.verticalShooting = false;
+                            this.hitInDir1 = false;
+                            this.setConstCoorOnce = true;
+                            this.opponentShoots()
+                        }
+                        else if(!this.hitInDir1 && !this.hitInDir3){
+                            console.log("ostatni else w dir3");
+                            this.cleverBotDir = 0;
+                            this.verticalShooting = false;
+                            this.hitInDir1 = false;
+                            this.setConstCoorOnce = true;
+                            this.opponentShoots()
                         }
                     }
-                }
     }
-        
+
+
+
+
+    cleverBotDir_4(){
+        if(this.setConstCoorOnce){
+            this.botCoor = {
+                lastX: this.constBotCoor.x,
+                lastY: this.constBotCoor.y
+            }
+            this.setConstCoorOnce = !this.setConstCoorOnce
+        }
+            this.botCoor.lastY = this.botCoor.lastY + 1;
+                    if (this.botCoor.lastY <= 9 && !this.shootedByBot.includes(`${this.botCoor.lastX}:${this.botCoor.lastY}`)) {  
+                        this.shootedByBot.push(`${this.botCoor.lastX}:${this.botCoor.lastY}`);
+                        const div = this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY];
+
+                        if (this.boardContextSwitch.board[this.botCoor.lastX][this.botCoor.lastY] == 1) {
+                            this.boardContextSwitch.my_board[this.botCoor.lastX][this.botCoor.lastY].classList.add("my-ship-damaged");
+                            const img = document.createElement('img');
+                            img.src = 'images/hit.png';
+                            console.log("funkcja dir4 trafiła");
+                            img.style.opacity = "0.6";
+                            div.appendChild(img);
+                            this.computerCounter += 1;
+                            if (this.computerCounter == 20) {
+                                this.playerLoses()
+                            }
+                            this.opponentShoots()
+                        }
+                        else {
+                            console.log("funkcja dir4 nie trafiła");
+                            const img = document.createElement('img');
+                            img.src = 'images/miss.png';
+                            img.style.opacity = "0.6";
+                            div.appendChild(img);
+                            this.setConstCoorOnce = true;
+                            playerTurnFlag = true;
+                            this.beSmartBot = false;
+                            this.cleverBotDir = 0;
+                            this.verticalShooting = true;
+                        }
+                    }
+                    else {
+                        this.beSmartBot = false;
+                        this.opponentShoots()
+                    }
+    }
+    
+    beSmartBotFunc(){
+        if(this.beSmartBot){
+            setTimeout(()=>{
+                if (this.cleverBotDir == 0 && this.verticalShooting) {
+                    console.log("weszło do funkcji 1");
+                    this.cleverBotDir_1()
+                }
+                else if (this.cleverBotDir == 0 && !this.verticalShooting && !this.hitInDir1) {
+                    console.log("weszło do funkcji 2");
+                    this.cleverBotDir_2()
+                }
+                else if (this.cleverBotDir == 1 && this.verticalShooting) {
+                    console.log("weszło do funkcji 3");
+                    this.cleverBotDir_3()
+                }
+                else if (this.cleverBotDir == 1 && !this.verticalShooting && !this.hitInDir1) {
+                    console.log("weszło do funkcji 4");
+                    this.cleverBotDir_4()
+                }
+            }, 300)
+        }
+        else{
+            this.opponentShoots()
+        }
+    }
+
+    playerWins(){
+        playerTurnFlag = false;
+        const winDiv = document.createElement('div');
+        winDiv.classList.add('win-div');
+        winDiv.innerText = "Gratulacje, wygrałeś!";
+        modalsBin.appendChild(winDiv);
+        setTimeout(() => {
+            this.gameRestart();
+        }, 5000);
+    }
+
     playerLoses(){
-        this.playerTurnFlag = false;
+        playerTurnFlag = false;
         const lossDiv = document.createElement('div');
         lossDiv.classList.add('loss-div');
-        lossDiv.innerText = "1/10 :(((("
+        lossDiv.innerText = "1/10 :((((";
         modalsBin.appendChild(lossDiv);
-        const revealEnemyShips = document.querySelectorAll('.ship')
+        const revealEnemyShips = document.querySelectorAll('.ship');
         for (let i = 0; i < revealEnemyShips.length; i += 1) {
             revealEnemyShips[i].style.backgroundColor = "red";
         }
@@ -528,7 +655,7 @@ class Ships {
                         for (let i = 0; i < oponentBoardTargets.length; i += 1) {
                             oponentBoardTargets[i].style.cursor = "pointer";
                         }
-                        if(this.playerTurnFlag){
+                        if(playerTurnFlag){
                             playerBoard.addEventListener('click', ()=>{
                                 alert('Twoja kolej jest to dlaczego klikasz SWOJĄ planszę ehhhh')
                             })
