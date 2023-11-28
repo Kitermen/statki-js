@@ -13,3 +13,26 @@ board.drawTableWithShips()
 board.boardContextSwitch = my_board;
 my_board.drawTableForPlayer()
 console.table(board.my_board)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
